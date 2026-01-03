@@ -1,0 +1,721 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2624,
+        -288
+      ],
+      "id": "f5fb43aa-c195-442f-93fc-ec58f81ce7cd",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -2208,
+        -288
+      ],
+      "id": "82fe5b87-38f7-43cf-bc15-5e1037ae9c6c",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -1984,
+        -256
+      ],
+      "id": "5b377132-584c-4e10-bebe-faa4b8d2ed0c",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "KqpFVLz6lUsnan9F",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.ParsedResults[0].ParsedText }}",
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"invoice_number\": {\n      \"type\": \"string\"\n    },\n    \"date\": {\n      \"type\": \"string\"\n    },\n    \"billing_company\": {\n      \"type\": \"string\"\n    },\n    \"billing_company_address\": {\n      \"type\": \"string\"\n    },\n    \"billing_company_email\": {\n      \"type\": \"string\"\n    },\n     \"billing_company_phone\": {\n      \"type\": \"number\"\n    },\n    \"customer_company_name\": {\n      \"type\": \"string\"\n    },\n    \"items\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"item_name\": {\n            \"type\": \"string\"\n          },\n          \"quantity\": {\n            \"type\": \"number\"\n          },\n          \"unit_price\": {\n            \"type\": \"number\"\n          },\n          \"total\": {\n            \"type\": \"number\"\n          }\n        },\n        \"required\": [\"item_name\"]\n      }\n    },\n    \"subtotal\": {\n      \"type\": \"number\"\n    },\n    \"tax\": {\n      \"type\": \"number\"\n    },\n    \"total_amount\": {\n      \"type\": \"number\"\n    }\n  }\n}\n",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        -752,
+        -336
+      ],
+      "id": "ca5868d4-bf54-4050-9483-a44bea00dc6c",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "content": "Validation",
+        "height": 384,
+        "width": 848,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2288,
+        -368
+      ],
+      "id": "7cb5adb1-d01d-43d4-a15d-9172e140b668",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Data Extraction",
+        "height": 384,
+        "width": 336,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1408,
+        -368
+      ],
+      "id": "31f94536-bbcc-4e20-b84e-cc463b152cbe",
+      "name": "Sticky Note1",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "content": "Data Addition",
+        "height": 384,
+        "width": 336,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1056,
+        -368
+      ],
+      "id": "b50ed8a8-e17a-47e8-bbf5-902fc265a9e7",
+      "name": "Sticky Note2",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.ocr.space/parse/image",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "314b414b0588957"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "base64Image",
+              "value": "={{ $json.data.startsWith(\"JVBER\")\n  ? \"data:application/pdf;base64,\" + $json.data\n  : \"data:image/png;base64,\" + $json.data }}"
+            },
+            {
+              "name": "language",
+              "value": "eng"
+            },
+            {
+              "name": "isOverlayRequired",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -1376,
+        -304
+      ],
+      "id": "8e2f7068-c926-4294-95a2-ced24a7a2ff9",
+      "name": "OCR"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a79c5032-5630-492a-95ae-83bb10d52f42",
+              "name": "output.invoice.items",
+              "value": "={{ $('Information Extractor').item.json.output.items }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -112,
+        -240
+      ],
+      "id": "8e43f6d1-1964-440a-bbeb-c545f1d1152e",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1soGyZgq9hUUirBLvzaQvonL1CrBxdCiGGUhko07ATng",
+          "mode": "list",
+          "cachedResultName": "Copy of invoice data extraction png/pdf",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1soGyZgq9hUUirBLvzaQvonL1CrBxdCiGGUhko07ATng/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "invoice_details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1soGyZgq9hUUirBLvzaQvonL1CrBxdCiGGUhko07ATng/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "invoice_number": "={{ $json.output.invoice_number }}",
+            "date": "={{ $json.output.date }}",
+            "billing_company": "={{ $json.output.billing_company }}",
+            "billing_company_address": "={{ $json.output.billing_company_address }}",
+            "billing_company_email": "={{ $json.output.billing_company_email }}",
+            "customer_company_name": "={{ $json.output.customer_company_name }}",
+            "total_amount": "={{ $json.output.total_amount }}",
+            "tax": "={{ $json.output.tax }}",
+            "billing_company_phone": "={{ $json.output.billing_company_phone }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "invoice_number",
+              "displayName": "invoice_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "billing_company",
+              "displayName": "billing_company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "billing_company_address",
+              "displayName": "billing_company_address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "billing_company_email",
+              "displayName": "billing_company_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "billing_company_phone",
+              "displayName": "billing_company_phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "customer_company_name",
+              "displayName": "customer_company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total_amount",
+              "displayName": "total_amount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "tax",
+              "displayName": "tax",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -368,
+        -288
+      ],
+      "id": "ae3b660b-bd7c-4df4-a827-ee9285f68a2c",
+      "name": "Append in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XmojfwAjSdejsplF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.invoice.items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        112,
+        -240
+      ],
+      "id": "525dbbac-228b-48a0-b106-a7247a70082e",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1soGyZgq9hUUirBLvzaQvonL1CrBxdCiGGUhko07ATng",
+          "mode": "list",
+          "cachedResultName": "Copy of invoice data extraction png/pdf",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1soGyZgq9hUUirBLvzaQvonL1CrBxdCiGGUhko07ATng/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 789665849,
+          "mode": "list",
+          "cachedResultName": "invoice_items",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1soGyZgq9hUUirBLvzaQvonL1CrBxdCiGGUhko07ATng/edit#gid=789665849"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "item_name": "={{ $json.item_name }}",
+            "quantity": "={{ $json.quantity }}",
+            "unit_price": "={{ $json.unit_price }}",
+            "total": "={{ $json.total }}",
+            "invoice_number": "={{ $('Information Extractor').item.json.output.invoice_number }}",
+            "date": "={{ $('Information Extractor').item.json.output.date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "invoice_number",
+              "displayName": "invoice_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "item_name",
+              "displayName": "item_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "quantity",
+              "displayName": "quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "unit_price",
+              "displayName": "unit_price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        304,
+        -240
+      ],
+      "id": "53769f15-3f40-4e71-88d4-fd34c2c4ff45",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "XmojfwAjSdejsplF",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "returnAll": true,
+        "filter": {
+          "folderId": {
+            "__rl": true,
+            "value": "1BkHnA9tQqivWoyCDizXtJDlU4ETyhpg9",
+            "mode": "list",
+            "cachedResultName": "Sample Invoices",
+            "cachedResultUrl": "https://drive.google.com/drive/folders/1BkHnA9tQqivWoyCDizXtJDlU4ETyhpg9"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -2416,
+        -288
+      ],
+      "id": "0479ad0d-8385-4d42-bc50-4ae00d4ed9bf",
+      "name": "Search files and folders",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "KqpFVLz6lUsnan9F",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        -112
+      ],
+      "id": "3b2f5f8f-c854-4bbd-bd13-9f1d741ef01e",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "JQFPMqmsltF9Hb6W",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -1680,
+        -288
+      ],
+      "id": "fcb5ecd6-7d95-47bb-bcd4-1159ce1c8ec5",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "70b199da-203d-405b-8e1f-4fed3d2a752f",
+              "leftValue": "={{$json.ParsedResults && $json.ParsedResults.length > 0}}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1200,
+        -192
+      ],
+      "id": "af2fb080-ca03-4f5b-b123-89c5ae87eb5f",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -1024,
+        -352
+      ],
+      "id": "18208ca2-f219-40ea-92ef-5bccc231e431",
+      "name": "Wait",
+      "webhookId": "6b38afd3-d84b-4766-99ac-e2b2d0f17e1b"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Append in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OCR": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append in sheet": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "OCR",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "de743dc1-bf77-486a-bd82-88307782ecf3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d8b000428aeea3f2e86225d3f138fda233cdfbec981cb6303348de5c9aa3642f"
+  },
+  "id": "wCIhyLP95r1AyAgQ",
+  "tags": []
+}
